@@ -41,6 +41,9 @@ pros::Motor left_mtr_frnt(20);
 pros::Motor left_mtr_bck(10);
 pros::Motor right_mtr_frnt(11);
 pros::Motor right_mtr_bck(1);
+pros::Motor intake1(12);
+pros::Motor intake2(13);
+pros::Motor aa(14);
 int distanceCalc(float numb){
 	return (numb/12.6)*900;
 }
@@ -97,11 +100,21 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 		fwd = master.get_analog(ANALOG_LEFT_Y);
 		right = master.get_analog(ANALOG_RIGHT_X);
-		x = lift1.get_voltage();
 		left_mtr_bck = fwd+right;
 		left_mtr_frnt = fwd+right;
 		right_mtr_frnt = fwd-right;
 		right_mtr_bck = fwd-right;
+		if (master.get_digital(DIGITAL_L1) == 1 ){
+			intake1.move_velocity(200);
+			intake2.move_velocity(200);
+		}
+		if (master.get_digital(DIGITAL_R1) == 1){
+			aa.move_velocity(20);
+		} else if(master.get_digital(DIGITAL_R2) == 1){
+			aa.move_velocity(-20);
+		} else{
+			aa.set_brake_mode(MOTOR_BRAKE_HOLD);
+		}
 		/*if (std::abs(right) >= 30){
 			left_mtr_bck = right;
 			left_mtr_frnt = right;

@@ -37,13 +37,13 @@ void competition_initialize() {
 
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
-pros::Motor left_mtr_frnt(20);
-pros::Motor left_mtr_bck(10);
-pros::Motor right_mtr_frnt(11);
-pros::Motor right_mtr_bck(1);
-pros::Motor intake1(12);
-pros::Motor intake2(13);
-pros::Motor aa(14);
+pros::Motor left_mtr_frnt(1);
+pros::Motor left_mtr_bck(5);
+pros::Motor right_mtr_frnt(3);
+pros::Motor right_mtr_bck(6);
+pros::Motor intake1(8);
+pros::Motor intake2(9);
+pros::Motor aa(10);
 int distanceCalc(float numb){
 	return (numb/12.6)*900;
 }
@@ -89,10 +89,8 @@ void autonomous() {
 
 void opcontrol() {
 	int fwd;
-	int liftu;
-	int liftd;
 	int right;
-	int x;
+	int intake;
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -100,18 +98,21 @@ void opcontrol() {
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 		fwd = master.get_analog(ANALOG_LEFT_Y);
 		right = master.get_analog(ANALOG_RIGHT_X);
+		intake = master.get_digital(DIGITAL_L1);
 		left_mtr_bck = fwd+right;
 		left_mtr_frnt = fwd+right;
-		right_mtr_frnt = fwd-right;
-		right_mtr_bck = fwd-right;
+		right_mtr_frnt = -fwd+right;
+		right_mtr_bck = -fwd+right;
+		intake1 = intake;
+		intake2 = intake;
 		if (master.get_digital(DIGITAL_L1) == 1 ){
 			intake1.move_velocity(200);
-			intake2.move_velocity(200);
+			intake2.move_velocity(-200);
 		}
 		if (master.get_digital(DIGITAL_R1) == 1){
-			aa.move_velocity(20);
+			aa.move(20);
 		} else if(master.get_digital(DIGITAL_R2) == 1){
-			aa.move_velocity(-20);
+			aa.move(-20);
 		} else{
 			aa.set_brake_mode(MOTOR_BRAKE_HOLD);
 		}
